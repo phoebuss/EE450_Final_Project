@@ -23,21 +23,7 @@ int ConnectHCServer();		//connect health center server
 int ClientLoginAuth(int client_sock_d);		//login authentication in client side
 int ClientMakeAppointment(int client_sock_d, char* doc_name, int* doc_port);	//make appointment in client side
 
-int main(void)
-{
-	
-	char doc_name[16]={0};
-	int doc_port;
 
-	doc_port = CommWithHealthCenter(doc_name);
-	if(doc_port == -1)
-	{
-		return -1;
-	}
-
-	CommWithDoc(doc_name, doc_port);
-	return 0;
-}
 
 //funciton that handles communication with Health Center Server
 int CommWithHealthCenter(char *doc_name)
