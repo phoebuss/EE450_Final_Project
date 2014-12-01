@@ -47,63 +47,7 @@ int LoadUserInfo(char* user_info_buf, int buf_size);
 slot* LoadDocSchedule(void);
 void* ThreadFunc(void* arg);
 
-int main(void)
-{
-	int server_p_sock_d, server_c_sock_d;
-	char user_info_buf[MAX_USER_NUM * BUF_SIZE];
-	sockaddr_in server_c_saddr;
-	socklen_t server_c_saddr_size;
-	int user_info_num;
-	slot *schedule_table;
-	pthread_t tid;
-	ParaList *p_para_list;
-	
-	//call ServerInit() and get parent socket descriptor 
-	server_p_sock_d = ServerInit();
-	if(server_p_sock_d == -1)
-	{
-		return -1;
-	}
-	
-	//call LoadUserInfo() and load user info into buffer
-	user_info_num = LoadUserInfo(user_info_buf, sizeof(user_info_buf));
-	if(user_info_num == -1)
-	{
-		return -1;
-	}
-	
-	//call LoadDocSchedule() and load schedule availablist into buffer
-	schedule_table = LoadDocSchedule();
 
-	while(1)
-	{
-		//call accept() and get child socket descriptor
-		memset(&server_c_saddr, 0, sizeof(sockaddr_in));
-		server_c_sock_d = accept(server_p_sock_d, (sockaddr *)&server_c_saddr, &server_c_saddr_size); 
-		if(server_c_sock_d == -1)
-		{
-//			perror("Server accept()");
-			return -1;
-		}		
-		
-		//initial parameters-included structure for thread-function call
-		p_para_list = NULL;
-		p_para_list = (ParaList *)malloc(sizeof(ParaList));
-		if(p_para_list == NULL)
-		{
-			return -1;
-		}
-		
-		//fill parameters-included structure
-		p_para_list->schedule_table = schedule_table;
-		p_para_list->server_c_sock_d = server_c_sock_d;
-		p_para_list->user_info_buf = user_info_buf;
-		p_para_list->user_info_num = user_info_num;
-	
-		//call thread-function
-		pthread_create(&tid, NULL, &ThreadFunc, p_para_list);
-	}
-}
 
 //function of new thread
 void* ThreadFunc(void* arg)
