@@ -25,51 +25,7 @@ typedef struct insurance_ls
 int ServerInit(int name, int port_num, insurance_ls* insurance_buf);
 void CommWithPatient(int server_sock_d, int name, insurance_ls ils);
 
-int main(void)
-{
-	pid_t pid;
-	int server_sock_d;
-	insurance_ls doc_insurance_ls;
-	int port_num;
-	int name;
 
-	//fork the process
-	pid = fork();
-	if(pid < 0)		//fork() failed
-	{
-//		perror("Main fork()");
-		return -1;
-	}
-	else if(pid > 0)	//implement doc1 in parent process
-	{
-		name = 1;
-		port_num = DOC1_PORT_NUM;
-		strcpy(doc_insurance_ls.path,DOC1_FILE);
-	}
-	else				//implement doc2 in child process
-	{
-		name = 2;
-		port_num = DOC2_PORT_NUM;
-		strcpy(doc_insurance_ls.path,DOC2_FILE);
-	}
-
-	//call SeverInit() 
-	server_sock_d = ServerInit(name, port_num, &doc_insurance_ls);
-	if(server_sock_d == -1)
-	{
-		return -1;
-	}
-
-	//dead loop
-	while(1)
-	{
-		//call CommWithPatient()
-		CommWithPatient(server_sock_d, name, doc_insurance_ls);
-	}
-
-	return 0;
-
-}
 
 //function that initials server: initial communication socket, read "doc#.txt" and store insurance info into buffer
 int ServerInit(int name, int port_num, insurance_ls* insurance_buf)
